@@ -32,6 +32,7 @@ export interface PanelState {
   content: string;
   readingPosition?: ReadingPosition;
   layout: PanelLayout;
+  hasSavedLayout: boolean;
   fontSize: number;
   lineHeight: number;
 }

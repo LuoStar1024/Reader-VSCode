@@ -84,6 +84,7 @@
         middleWidth: 280,
         outputWidth: 170,
       },
+      hasSavedLayout: false,
       fontSize: 11,
       lineHeight: 1.3,
     },
@@ -123,11 +124,36 @@
     return LEFT_DIVIDER_WIDTH + CHAPTER_DIVIDER_WIDTH + OUTPUT_DIVIDER_WIDTH;
   }
 
+  function getBalancedLayout(containerWidth) {
+    if (containerWidth <= 0) {
+      return {
+        leftWidth: 260,
+        middleWidth: 280,
+        outputWidth: 170,
+      };
+    }
+
+    const availableWidth = Math.max(0, containerWidth - getTotalDividerWidth());
+    const balancedWidth = Math.max(
+      MIN_LEFT,
+      Math.floor(availableWidth / 4),
+    );
+
+    return {
+      leftWidth: balancedWidth,
+      middleWidth: Math.max(MIN_MIDDLE, balancedWidth),
+      outputWidth: Math.max(MIN_OUTPUT, balancedWidth),
+    };
+  }
+
   function applyLayout(layout) {
     const containerWidth = elements.paneContainer.clientWidth || 0;
-    let leftWidth = Math.max(MIN_LEFT, Math.round(layout.leftWidth || 260));
-    let middleWidth = Math.max(MIN_MIDDLE, Math.round(layout.middleWidth || 280));
-    let outputWidth = Math.max(MIN_OUTPUT, Math.round(layout.outputWidth || 170));
+    const baseLayout = state.panel.hasSavedLayout
+      ? layout
+      : getBalancedLayout(containerWidth);
+    let leftWidth = Math.max(MIN_LEFT, Math.round(baseLayout.leftWidth || 260));
+    let middleWidth = Math.max(MIN_MIDDLE, Math.round(baseLayout.middleWidth || 280));
+    let outputWidth = Math.max(MIN_OUTPUT, Math.round(baseLayout.outputWidth || 170));
 
     if (containerWidth > 0) {
       const maxUsable =
@@ -161,6 +187,7 @@
   }
 
   function saveLayout() {
+    state.panel.hasSavedLayout = true;
     debounce("saveLayoutTimer", () => {
       postMessage({
         type: "saveLayout",

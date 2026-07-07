@@ -81,6 +81,7 @@ export class LogLibrary {
   private readonly readingPositions = new Map<string, ReadingPosition>();
   private logs: LogEntry[] = [];
   private activeLogId?: string;
+  private hasSavedLayout = false;
   private layout: PanelLayout = DEFAULT_LAYOUT;
   private fontSize = DEFAULT_FONT_SIZE;
   private lineHeight = DEFAULT_LINE_HEIGHT;
@@ -91,10 +92,11 @@ export class LogLibrary {
       STORAGE_KEYS.activeLogId,
       undefined,
     );
-    const savedLayout = this.context.globalState.get<Partial<PanelLayout>>(
+    const savedLayout = this.context.globalState.get<Partial<PanelLayout> | undefined>(
       STORAGE_KEYS.layout,
-      DEFAULT_LAYOUT,
+      undefined,
     );
+    this.hasSavedLayout = savedLayout !== undefined;
     this.layout = {
       ...DEFAULT_LAYOUT,
       ...savedLayout,
@@ -244,6 +246,7 @@ export class LogLibrary {
         chapters: [],
         content: "",
         layout: this.layout,
+        hasSavedLayout: this.hasSavedLayout,
         fontSize: this.fontSize,
         lineHeight: this.lineHeight,
       };
@@ -273,6 +276,7 @@ export class LogLibrary {
         updatedAt: Date.now(),
       },
       layout: this.layout,
+      hasSavedLayout: this.hasSavedLayout,
       fontSize: this.fontSize,
       lineHeight: this.lineHeight,
     };
@@ -333,6 +337,7 @@ export class LogLibrary {
     const leftWidth = Math.max(50, Math.round(layout.leftWidth));
     const middleWidth = Math.max(50, Math.round(layout.middleWidth));
     const outputWidth = Math.max(50, Math.round(layout.outputWidth));
+    this.hasSavedLayout = true;
     this.layout = { leftWidth, middleWidth, outputWidth };
     await this.context.globalState.update(STORAGE_KEYS.layout, this.layout);
   }
