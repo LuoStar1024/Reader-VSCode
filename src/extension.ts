@@ -1,0 +1,41 @@
+import * as vscode from "vscode";
+
+import { LogLibrary } from "./logLibrary";
+import { LogPanelViewProvider } from "./logPanelViewProvider";
+
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
+  const logLibrary = new LogLibrary(context);
+  await logLibrary.initialize();
+
+  const logPanelViewProvider = new LogPanelViewProvider(context, logLibrary);
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      LogPanelViewProvider.viewId,
+      logPanelViewProvider,
+      {
+        webviewOptions: {
+          retainContextWhenHidden: true,
+        },
+      },
+    ),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("vscode-reader.openLogPanel", async () => {
+      await logPanelViewProvider.reveal();
+
+      if (!logLibrary.hasLogs()) {
+        await logPanelViewProvider.promptAddLogs();
+      } else {
+        await logPanelViewProvider.refresh();
+      }
+    }),
+    vscode.commands.registerCommand("vscode-reader.addLogs", async () => {
+      await logPanelViewProvider.reveal();
+      await logPanelViewProvider.promptAddLogs();
+    }),
+  );
+}
+
+export function deactivate(): void {}

@@ -1,0 +1,84 @@
+{
+  "name": "vscode-reader",
+  "displayName": "VSCode Reader",
+  "description": "Read TXT novels inside a custom VS Code panel.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.125.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:vscode-reader.openLogPanel",
+    "onCommand:vscode-reader.addLogs",
+    "onView:vscodeReader.logView"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "vscodeReaderPanel",
+          "title": "日志",
+          "icon": "media/logs.svg"
+        }
+      ]
+    },
+    "views": {
+      "vscodeReaderPanel": [
+        {
+          "id": "vscodeReader.logView",
+          "name": "日志",
+          "type": "webview",
+          "visibility": "visible"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "vscode-reader.openLogPanel",
+        "title": "新建日志",
+        "icon": "$(new-file)"
+      },
+      {
+        "command": "vscode-reader.addLogs",
+        "title": "新增日志",
+        "icon": "$(add)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "vscode-reader.openLogPanel",
+          "when": "view == terminal",
+          "group": "navigation@9"
+        },
+        {
+          "command": "vscode-reader.openLogPanel",
+          "when": "view == vscodeReader.logView",
+          "group": "navigation@0"
+        },
+        {
+          "command": "vscode-reader.addLogs",
+          "when": "view == vscodeReader.logView",
+          "group": "navigation@1"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile"
+  },
+  "dependencies": {
+    "chardet": "^2.2.0",
+    "iconv-lite": "^0.7.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.0",
+    "@types/vscode": "^1.125.0",
+    "typescript": "^6.0.3"
+  }
+}
