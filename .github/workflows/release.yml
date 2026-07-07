@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build extension
+        run: npm run compile
+
+      - name: Package VSIX
+        run: npm run package
+
+      - name: Resolve package metadata
+        id: metadata
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          NAME=$(node -p "require('./package.json').name")
+          PUBLISHER=$(node -p "require('./package.json').publisher || ''")
+          VSIX_PATH="${NAME}-${VERSION}.vsix"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "publisher=${PUBLISHER}" >> "$GITHUB_OUTPUT"
+          echo "vsix_path=${VSIX_PATH}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" "${{ steps.metadata.outputs.vsix_path }}" \
+            --repo "${{ github.repository }}" \
+            --title "${{ github.ref_name }}" \
+            --generate-notes
+
+      - name: Publish to Visual Studio Marketplace
+        if: ${{ secrets.VSCE_PAT != '' && steps.metadata.outputs.publisher != '' }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx @vscode/vsce publish --packagePath "${{ steps.metadata.outputs.vsix_path }}" -p "$VSCE_PAT"

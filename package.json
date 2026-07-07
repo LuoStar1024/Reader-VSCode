@@ -3,8 +3,26 @@
   "displayName": "VSCode Reader",
   "description": "Read TXT novels inside a custom VS Code panel.",
   "version": "0.0.1",
+  "publisher": "luostar1024",
+  "license": "GPL-3.0-only",
+  "icon": "icon.png",
+  "keywords": [
+    "txt",
+    "reader",
+    "novel",
+    "ebook",
+    "book"
+  ],
   "engines": {
     "vscode": "^1.125.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuoStar1024/Reader-VSCode.git"
+  },
+  "homepage": "https://github.com/LuoStar1024/Reader-VSCode",
+  "bugs": {
+    "url": "https://github.com/LuoStar1024/Reader-VSCode/issues"
   },
   "categories": [
     "Other"
@@ -70,6 +88,8 @@
   "scripts": {
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish:vsce": "vsce publish",
     "vscode:prepublish": "npm run compile"
   },
   "dependencies": {
@@ -77,6 +97,7 @@
     "iconv-lite": "^0.7.3"
   },
   "devDependencies": {
+    "@vscode/vsce": "^3.9.2",
     "@types/node": "^26.1.0",
     "@types/vscode": "^1.125.0",
     "typescript": "^6.0.3"
