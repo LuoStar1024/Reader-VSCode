@@ -527,10 +527,15 @@
   function getElementLineStep(element) {
     const computedStyle = window.getComputedStyle(element);
     const fontSize = Number.parseFloat(computedStyle.fontSize) || state.panel.fontSize || 11;
-    const computedLineHeight = Number.parseFloat(computedStyle.lineHeight);
+    const lineHeightValue = computedStyle.lineHeight || "";
+    const computedLineHeight = Number.parseFloat(lineHeightValue);
+
+    if (lineHeightValue.endsWith("px") && Number.isFinite(computedLineHeight)) {
+      return Math.max(1, computedLineHeight);
+    }
 
     if (Number.isFinite(computedLineHeight)) {
-      return Math.max(1, computedLineHeight);
+      return Math.max(1, fontSize * computedLineHeight);
     }
 
     return Math.max(1, fontSize * (state.panel.lineHeight || 1.3));
@@ -584,28 +589,20 @@
 
     const lineStep = getElementLineStep(target);
     const pageLineCount = getElementPageLineCount(target);
-    let nextScrollTop;
-
-    if (Math.abs(scrollDelta) < lineStep) {
-      nextScrollTop = Math.min(
-        Math.max(target.scrollTop + scrollDelta, 0),
-        maxScroll,
-      );
-    } else {
-      const currentLineIndex = Math.floor(target.scrollTop / lineStep);
-      const deltaLineCount = Math.max(
-        1,
-        Math.round(Math.abs(scrollDelta) / (pageLineCount * lineStep)),
-      ) * pageLineCount;
-      const nextLineIndex = Math.max(
+    const nextScrollTop = Math.min(
+      Math.max(
+        target.scrollTop + (
+          Math.abs(scrollDelta) < lineStep
+            ? scrollDelta
+            : Math.sign(scrollDelta) * Math.max(
+              1,
+              Math.round(Math.abs(scrollDelta) / (pageLineCount * lineStep)),
+            ) * pageLineCount * lineStep
+        ),
         0,
-        currentLineIndex + Math.sign(scrollDelta) * deltaLineCount,
-      );
-      nextScrollTop = Math.min(
-        Math.max(nextLineIndex * lineStep, 0),
-        maxScroll,
-      );
-    }
+      ),
+      maxScroll,
+    );
 
     if (Math.abs(nextScrollTop - target.scrollTop) < 0.1) {
       return;
