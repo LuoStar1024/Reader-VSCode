@@ -510,6 +510,97 @@
     return maxScroll <= 0 ? 0 : element.scrollTop / maxScroll;
   }
 
+  function getElementLineStep(element) {
+    const computedStyle = window.getComputedStyle(element);
+    const fontSize = Number.parseFloat(computedStyle.fontSize) || state.panel.fontSize || 11;
+    const computedLineHeight = Number.parseFloat(computedStyle.lineHeight);
+
+    if (Number.isFinite(computedLineHeight)) {
+      return Math.max(1, computedLineHeight);
+    }
+
+    return Math.max(1, fontSize * (state.panel.lineHeight || 1.3));
+  }
+
+  function getElementPageLineCount(element) {
+    const computedStyle = window.getComputedStyle(element);
+    const lineStep = getElementLineStep(element);
+    const paddingTop = Number.parseFloat(computedStyle.paddingTop) || 0;
+    const paddingBottom = Number.parseFloat(computedStyle.paddingBottom) || 0;
+    const usableHeight = Math.max(0, element.clientHeight - paddingTop - paddingBottom);
+    return Math.max(1, Math.floor((usableHeight + 0.01) / lineStep));
+  }
+
+  function normalizeWheelDelta(event, element) {
+    const lineStep = getElementLineStep(element);
+    const pageLineCount = getElementPageLineCount(element);
+    const pageStep = pageLineCount * lineStep;
+
+    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+      return Math.sign(event.deltaY) * Math.max(1, Math.round(Math.abs(event.deltaY))) * pageStep;
+    }
+
+    if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+      return Math.sign(event.deltaY) * Math.max(1, Math.round(Math.abs(event.deltaY))) * pageStep;
+    }
+
+    if (Math.abs(event.deltaY) <= lineStep) {
+      return event.deltaY;
+    }
+
+    const wheelStepCount = Math.max(1, Math.round(Math.abs(event.deltaY) / 100));
+    return Math.sign(event.deltaY) * wheelStepCount * pageStep;
+  }
+
+  function handleReaderWheel(event) {
+    const target = event.currentTarget;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const maxScroll = target.scrollHeight - target.clientHeight;
+    if (maxScroll <= 0) {
+      return;
+    }
+
+    const scrollDelta = normalizeWheelDelta(event, target);
+    if (!scrollDelta) {
+      return;
+    }
+
+    const lineStep = getElementLineStep(target);
+    const pageLineCount = getElementPageLineCount(target);
+    let nextScrollTop;
+
+    if (Math.abs(scrollDelta) < lineStep) {
+      nextScrollTop = Math.min(
+        Math.max(target.scrollTop + scrollDelta, 0),
+        maxScroll,
+      );
+    } else {
+      const currentLineIndex = Math.floor(target.scrollTop / lineStep);
+      const deltaLineCount = Math.max(
+        1,
+        Math.round(Math.abs(scrollDelta) / (pageLineCount * lineStep)),
+      ) * pageLineCount;
+      const nextLineIndex = Math.max(
+        0,
+        currentLineIndex + Math.sign(scrollDelta) * deltaLineCount,
+      );
+      nextScrollTop = Math.min(
+        Math.max(nextLineIndex * lineStep, 0),
+        maxScroll,
+      );
+    }
+
+    if (Math.abs(nextScrollTop - target.scrollTop) < 0.1) {
+      return;
+    }
+
+    event.preventDefault();
+    target.scrollTop = nextScrollTop;
+  }
+
   function setElementScrollByRatio(element, scrollRatio) {
     const maxScroll = element.scrollHeight - element.clientHeight;
     element.scrollTop = maxScroll <= 0 ? 0 : Math.max(0, maxScroll * scrollRatio);
@@ -597,6 +688,14 @@
 
     elements.nextChapterButton.addEventListener("click", () => {
       openRelativeChapter(1);
+    });
+
+    elements.contentBody.addEventListener("wheel", handleReaderWheel, {
+      passive: false,
+    });
+
+    elements.outputBody.addEventListener("wheel", handleReaderWheel, {
+      passive: false,
     });
 
     elements.fontSizeDownButton.addEventListener("click", () => {
