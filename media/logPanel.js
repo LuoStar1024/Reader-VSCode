@@ -148,9 +148,11 @@
 
   function applyLayout(layout) {
     const containerWidth = elements.paneContainer.clientWidth || 0;
-    const baseLayout = state.panel.hasSavedLayout
-      ? layout
-      : getBalancedLayout(containerWidth);
+    const baseLayout = layout || (
+      state.panel.hasSavedLayout
+        ? state.panel.layout
+        : getBalancedLayout(containerWidth)
+    );
     let leftWidth = Math.max(MIN_LEFT, Math.round(baseLayout.leftWidth || 260));
     let middleWidth = Math.max(MIN_MIDDLE, Math.round(baseLayout.middleWidth || 280));
     let outputWidth = Math.max(MIN_OUTPUT, Math.round(baseLayout.outputWidth || 170));
@@ -179,20 +181,32 @@
       }
     }
 
-    state.panel.layout.leftWidth = leftWidth;
-    state.panel.layout.middleWidth = middleWidth;
-    state.panel.layout.outputWidth = outputWidth;
     elements.paneContainer.style.gridTemplateColumns =
       `${leftWidth}px ${LEFT_DIVIDER_WIDTH}px ${middleWidth}px ${CHAPTER_DIVIDER_WIDTH}px ${outputWidth}px ${OUTPUT_DIVIDER_WIDTH}px minmax(${MIN_RIGHT}px, 1fr)`;
   }
 
+  function updateSavedLayout(layout) {
+    state.panel.layout = {
+      leftWidth: Math.max(MIN_LEFT, Math.round(layout.leftWidth || 260)),
+      middleWidth: Math.max(MIN_MIDDLE, Math.round(layout.middleWidth || 280)),
+      outputWidth: Math.max(MIN_OUTPUT, Math.round(layout.outputWidth || 170)),
+    };
+  }
+
+  function flushLayoutSave() {
+    clearTimeout(state.saveLayoutTimer);
+    state.saveLayoutTimer = undefined;
+    postMessage({
+      type: "saveLayout",
+      layout: state.panel.layout,
+    });
+  }
+
   function saveLayout() {
     state.panel.hasSavedLayout = true;
+    vscode.setState(state.panel);
     debounce("saveLayoutTimer", () => {
-      postMessage({
-        type: "saveLayout",
-        layout: state.panel.layout,
-      });
+      flushLayoutSave();
     }, 180);
   }
 
@@ -803,11 +817,12 @@
             ),
           );
           const nextMiddle = Math.max(MIN_MIDDLE, pairWidth - nextLeft);
-          applyLayout({
+          updateSavedLayout({
             leftWidth: nextLeft,
             middleWidth: nextMiddle,
             outputWidth: initialOutput,
           });
+          applyLayout(state.panel.layout);
           return;
         }
 
@@ -821,11 +836,12 @@
             ),
           );
           const nextOutput = Math.max(MIN_OUTPUT, pairWidth - nextMiddle);
-          applyLayout({
+          updateSavedLayout({
             leftWidth: initialLeft,
             middleWidth: nextMiddle,
             outputWidth: nextOutput,
           });
+          applyLayout(state.panel.layout);
           return;
         }
 
@@ -836,11 +852,12 @@
             containerWidth - initialLeft - initialMiddle - MIN_RIGHT - totalDividerWidth,
           ),
         );
-        applyLayout({
+        updateSavedLayout({
           leftWidth: initialLeft,
           middleWidth: initialMiddle,
           outputWidth: nextOutput,
         });
+        applyLayout(state.panel.layout);
       }
 
       function onPointerUp(upEvent) {
@@ -904,6 +921,9 @@
   startAdRotation();
   window.addEventListener("resize", () => applyLayout(state.panel.layout));
   window.addEventListener("beforeunload", () => {
+    if (state.panel.hasSavedLayout) {
+      flushLayoutSave();
+    }
     clearInterval(state.adTimer);
   });
 
