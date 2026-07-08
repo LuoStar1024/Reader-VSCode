@@ -8,7 +8,7 @@ npm run compile
 npm run package
 ```
 
-This creates a `.vsix` file in `dist/`, for example `dist/reader.vsix`.
+This creates a `.vsix` file in `dist/`, for example `dist/reader-star.vsix`.
 
 ## Publish to Visual Studio Marketplace
 
@@ -40,7 +40,7 @@ npm run publish:vsce -- -p <YOUR_VSCE_PAT>
 6. Or publish an already-built package:
 
 ```bash
-npx @vscode/vsce publish --packagePath dist/reader.vsix -p <YOUR_VSCE_PAT>
+npx @vscode/vsce publish --packagePath dist/reader-star.vsix -p <YOUR_VSCE_PAT>
 ```
 
 7. If the publish fails with `401` or `403`, re-check these two common causes:
@@ -55,8 +55,8 @@ For long-term automation, prefer Microsoft Entra ID instead of PATs.
 2. Create and push a version tag:
 
 ```bash
-git tag v0.0.1
-git push origin v0.0.1
+git tag v0.0.2
+git push origin v0.0.2
 ```
 
 3. GitHub Actions will build the extension, create a GitHub Release, and upload the `.vsix` asset automatically.
@@ -73,17 +73,17 @@ If you prefer to upload the asset yourself:
 https://github.com/LuoStar1024/Reader-VSCode/releases/new
 ```
 
-3. Choose tag `v0.0.1`
+3. Choose tag `v0.0.2`
 4. Release title:
 
 ```text
-v0.0.1
+v0.0.2
 ```
 
 5. Upload:
 
 ```text
-dist/reader.vsix
+dist/reader-star.vsix
 ```
 
 ## Required GitHub secret

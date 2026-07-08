@@ -1,6 +1,6 @@
-# Reader
+# Reader-Star
 
-`Reader` 是一个在 VS Code 底部面板中阅读 `txt` 书籍的扩展，适合在写代码时顺手阅读小说或长文本内容。
+`Reader-Star` 是一个在 VS Code 底部面板中阅读 `txt` 书籍的扩展，适合在写代码时顺手阅读小说或长文本内容。
 github仓库地址：https://github.com/LuoStar1024/Reader-VSCode
 
 第一次打开时，如果底部面板没有展开，可以使用下面两种方式把界面拉出来。

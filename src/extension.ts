@@ -22,7 +22,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("reader.openLogPanel", async () => {
+    vscode.commands.registerCommand("reader-star.openLogPanel", async () => {
       await logPanelViewProvider.reveal();
 
       if (!logLibrary.hasLogs()) {
@@ -31,7 +31,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         await logPanelViewProvider.refresh();
       }
     }),
-    vscode.commands.registerCommand("reader.addLogs", async () => {
+    vscode.commands.registerCommand("reader-star.addLogs", async () => {
       await logPanelViewProvider.reveal();
       await logPanelViewProvider.promptAddLogs();
     }),

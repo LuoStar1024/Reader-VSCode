@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.2
+
+- 扩展名调整为 `Reader-Star`
+- 修复 Marketplace 中 `reader` 名称已存在的问题
+- 重新打包发布版本
+
 ## 0.0.1
 
 - 初始版本发布

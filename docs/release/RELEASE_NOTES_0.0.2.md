@@ -1,6 +1,6 @@
-# Reader v0.0.1
+# Reader-Star v0.0.2
 
-初始版本发布。
+扩展改名后的发布版本。
 
 ## Highlights
 
@@ -8,11 +8,12 @@
 - 自动识别常见章节标题并生成目录
 - 支持章节搜索、章节切换与阅读进度记忆
 - 支持保存面板布局、字号和行距
+- 调整扩展名称为 `Reader-Star`
 
 ## Installation
 
 - Visual Studio Marketplace
-- Install from VSIX: `reader.vsix`
+- Install from VSIX: `reader-star.vsix`
 
 ## Notes
 

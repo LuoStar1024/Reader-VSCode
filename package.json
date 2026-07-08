@@ -1,14 +1,15 @@
 {
-  "name": "reader",
-  "displayName": "Reader",
+  "name": "reader-star",
+  "displayName": "Reader-Star",
   "description": "Read TXT novels inside a custom VS Code panel.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "luostar1024",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
   "keywords": [
     "txt",
     "reader",
+    "reader-star",
     "novel",
     "ebook",
     "book"
@@ -28,25 +29,25 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:reader.openLogPanel",
-    "onCommand:reader.addLogs",
-    "onView:vscodeReader.logView"
+    "onCommand:reader-star.openLogPanel",
+    "onCommand:reader-star.addLogs",
+    "onView:readerStar.logView"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
       "panel": [
         {
-          "id": "vscodeReaderPanel",
+          "id": "readerStarPanel",
           "title": "日志",
           "icon": "media/logs.svg"
         }
       ]
     },
     "views": {
-      "vscodeReaderPanel": [
+      "readerStarPanel": [
         {
-          "id": "vscodeReader.logView",
+          "id": "readerStar.logView",
           "name": "日志",
           "type": "webview",
           "visibility": "visible"
@@ -55,12 +56,12 @@
     },
     "commands": [
       {
-        "command": "reader.openLogPanel",
+        "command": "reader-star.openLogPanel",
         "title": "新建日志",
         "icon": "$(new-file)"
       },
       {
-        "command": "reader.addLogs",
+        "command": "reader-star.addLogs",
         "title": "新增日志",
         "icon": "$(add)"
       }
@@ -68,18 +69,18 @@
     "menus": {
       "view/title": [
         {
-          "command": "reader.openLogPanel",
+          "command": "reader-star.openLogPanel",
           "when": "view == terminal",
           "group": "navigation@9"
         },
         {
-          "command": "reader.openLogPanel",
-          "when": "view == vscodeReader.logView",
+          "command": "reader-star.openLogPanel",
+          "when": "view == readerStar.logView",
           "group": "navigation@0"
         },
         {
-          "command": "reader.addLogs",
-          "when": "view == vscodeReader.logView",
+          "command": "reader-star.addLogs",
+          "when": "view == readerStar.logView",
           "group": "navigation@1"
         }
       ]
@@ -88,7 +89,7 @@
   "scripts": {
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "package": "vsce package --out dist/reader.vsix",
+    "package": "vsce package --out dist/reader-star.vsix",
     "publish:vsce": "vsce publish",
     "vscode:prepublish": "npm run compile"
   },
