@@ -2,7 +2,7 @@
   "name": "reader-star",
   "displayName": "Reader-Star",
   "description": "Read TXT novels inside a custom VS Code panel.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "luostar1024",
   "license": "GPL-3.0-only",
   "icon": "icon.png",

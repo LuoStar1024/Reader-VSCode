@@ -30,6 +30,13 @@ github仓库地址：https://github.com/LuoStar1024/Reader-VSCode
 - 记忆阅读进度
 - 记忆面板布局、字体大小和行距
 
+## 快捷键
+
+当鼠标停留在右侧阅读区域时：
+
+- `Space`：下一页；如果当前已经到本章末尾，则切换到下一章
+- `Shift+Space`：上一页；如果当前已经到本章开头，则切换到上一章
+
 ## License
 
 This project is licensed under the GNU GPL v3. See the [LICENSE](LICENSE) file for details.
