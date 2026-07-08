@@ -105,7 +105,7 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
         const rejectedSummary = result.rejectedEntries
           .map((entry) => `${entry.name}: ${entry.reason}`)
           .join("\n");
-        console.error(`[vscode-reader] 新增日志失败:\n${rejectedSummary}`);
+        console.error(`[reader] 新增日志失败:\n${rejectedSummary}`);
         void vscode.window.showErrorMessage(
           `有 ${result.rejectedEntries.length} 个日志解析失败，已跳过。详情见开发者工具控制台。`,
         );

@@ -1,6 +1,7 @@
 node_modules/
 out/
 *.vsix
+dist/
 .vscode-test/
 *.tsbuildinfo
 npm-debug.log*

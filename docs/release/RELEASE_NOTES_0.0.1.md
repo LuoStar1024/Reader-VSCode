@@ -1,4 +1,4 @@
-# VSCode Reader v0.0.1
+# Reader v0.0.1
 
 初始版本发布。
 
@@ -12,7 +12,7 @@
 ## Installation
 
 - Visual Studio Marketplace
-- Install from VSIX: `vscode-reader-0.0.1.vsix`
+- Install from VSIX: `reader.vsix`
 
 ## Notes
 

@@ -41,12 +41,12 @@ export interface AddLogsResult {
 }
 
 const STORAGE_KEYS = {
-  logs: "vscode-reader.logs",
-  activeLogId: "vscode-reader.activeLogId",
-  readingPositions: "vscode-reader.readingPositions",
-  layout: "vscode-reader.layout",
-  fontSize: "vscode-reader.fontSize",
-  lineHeight: "vscode-reader.lineHeight",
+  logs: "reader.logs",
+  activeLogId: "reader.activeLogId",
+  readingPositions: "reader.readingPositions",
+  layout: "reader.layout",
+  fontSize: "reader.fontSize",
+  lineHeight: "reader.lineHeight",
 } as const;
 
 const DEFAULT_LAYOUT: PanelLayout = {
@@ -180,7 +180,7 @@ export class LogLibrary {
 
         if (chapters.length <= 2) {
           const reason = `解析失败：识别到的章节数为 ${chapters.length}，需大于 2 章。`;
-          console.error(`[vscode-reader] ${fileName}: ${reason}`);
+          console.error(`[reader] ${fileName}: ${reason}`);
           rejectedEntries.push({
             filePath: uri.fsPath,
             name: fileName,
@@ -193,7 +193,7 @@ export class LogLibrary {
           error instanceof Error
             ? `解析失败：${error.message}`
             : "解析失败：无法读取或解析该文件。";
-        console.error(`[vscode-reader] ${fileName}: ${reason}`);
+        console.error(`[reader] ${fileName}: ${reason}`);
         rejectedEntries.push({
           filePath: uri.fsPath,
           name: fileName,

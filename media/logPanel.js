@@ -10,8 +10,8 @@
   const OUTPUT_DIVIDER_WIDTH = 1;
   const AD_ROTATION_MS = 60000;
   const AD_MESSAGES = [
-    "中转站：api.luostar.net",
-    "中转站：apicf.luostar.net",
+    "中转站：ai.luostar.net",
+    "中转站：aicf.luostar.net",
   ];
   const MIN_FONT_SIZE = 9;
   const MAX_FONT_SIZE = 20;

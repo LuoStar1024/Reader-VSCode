@@ -8,7 +8,7 @@ npm run compile
 npm run package
 ```
 
-This creates a `.vsix` file in the project root, for example `vscode-reader-0.0.1.vsix`.
+This creates a `.vsix` file in `dist/`, for example `dist/reader.vsix`.
 
 ## Publish to Visual Studio Marketplace
 
@@ -40,7 +40,7 @@ npm run publish:vsce -- -p <YOUR_VSCE_PAT>
 6. Or publish an already-built package:
 
 ```bash
-npx @vscode/vsce publish --packagePath vscode-reader-0.0.1.vsix -p <YOUR_VSCE_PAT>
+npx @vscode/vsce publish --packagePath dist/reader.vsix -p <YOUR_VSCE_PAT>
 ```
 
 7. If the publish fails with `401` or `403`, re-check these two common causes:
@@ -83,7 +83,7 @@ v0.0.1
 5. Upload:
 
 ```text
-vscode-reader-0.0.1.vsix
+dist/reader.vsix
 ```
 
 ## Required GitHub secret

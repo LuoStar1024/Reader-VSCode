@@ -4,5 +4,4 @@ src/**
 tsconfig.json
 **/*.map
 .gitignore
-RELEASE.md
-RELEASE_NOTES*.md
+docs/release/**

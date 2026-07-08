@@ -38,7 +38,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           NAME=$(node -p "require('./package.json').name")
           PUBLISHER=$(node -p "require('./package.json').publisher || ''")
-          VSIX_PATH="${NAME}-${VERSION}.vsix"
+          VSIX_PATH="dist/${NAME}.vsix"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           echo "publisher=${PUBLISHER}" >> "$GITHUB_OUTPUT"
