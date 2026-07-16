@@ -43,4 +43,4 @@ This project is licensed under the GNU GPL v3. See the [LICENSE](LICENSE) file f
 
 ## 广告
 
-本项目全程使用ai开发完成，使用的中转站：https://ai.luostar.net 或者cf代理的 https://aicf.luostar.net
+本项目全程使用ai开发完成，使用的中转站：https://api.luostar.net 或者cf代理的 https://apicf.luostar.net

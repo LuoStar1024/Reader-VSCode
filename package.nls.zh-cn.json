@@ -1,0 +1,7 @@
+{
+  "extension.description": "在自定义 VS Code 面板中阅读 TXT 小说。",
+  "readerStar.panel.title": "日志",
+  "readerStar.view.name": "日志",
+  "readerStar.command.openLogPanel": "新建日志",
+  "readerStar.command.addLogs": "新增日志"
+}

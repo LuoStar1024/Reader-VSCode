@@ -1,0 +1,7 @@
+{
+  "extension.description": "Read TXT novels inside a custom VS Code panel.",
+  "readerStar.panel.title": "Logs",
+  "readerStar.view.name": "Logs",
+  "readerStar.command.openLogPanel": "New Log",
+  "readerStar.command.addLogs": "Add Logs"
+}

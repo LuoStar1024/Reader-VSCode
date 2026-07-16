@@ -2,12 +2,18 @@ import * as vscode from "vscode";
 
 import { LogLibrary } from "./logLibrary";
 import { LogPanelViewProvider } from "./logPanelViewProvider";
+import { getLocalizedStrings } from "./localization";
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-  const logLibrary = new LogLibrary(context);
+  const strings = getLocalizedStrings(vscode.env.language);
+  const logLibrary = new LogLibrary(context, strings);
   await logLibrary.initialize();
 
-  const logPanelViewProvider = new LogPanelViewProvider(context, logLibrary);
+  const logPanelViewProvider = new LogPanelViewProvider(
+    context,
+    logLibrary,
+    strings,
+  );
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(

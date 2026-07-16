@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import { LogLibrary } from "./logLibrary";
+import { LocalizedStrings } from "./localization";
 import { PanelLayout } from "./types";
 
 type WebviewMessage =
@@ -23,6 +24,7 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
   public constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly logLibrary: LogLibrary,
+    private readonly strings: LocalizedStrings,
   ) {}
 
   public async resolveWebviewView(
@@ -84,17 +86,17 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
       canSelectFolders: false,
       canSelectMany: true,
       filters: {
-        "Text files": ["txt"],
+        [this.strings.textFiles]: ["txt"],
       },
-      openLabel: "添加日志",
-      title: "选择要添加的 TXT 日志文件",
+      openLabel: this.strings.addLogs,
+      title: this.strings.selectTxtLogs,
     });
 
     if (!selectedUris || selectedUris.length === 0) {
       return;
     }
 
-    await this.withProgress("正在导入日志...", async () => {
+    await this.withProgress(this.strings.importingLogs, async () => {
       const result = await this.logLibrary.addLogs(selectedUris);
 
       if (result.addedEntries[0]) {
@@ -105,9 +107,11 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
         const rejectedSummary = result.rejectedEntries
           .map((entry) => `${entry.name}: ${entry.reason}`)
           .join("\n");
-        console.error(`[reader-star] 新增日志失败:\n${rejectedSummary}`);
+        console.error(
+          `[reader-star] ${this.strings.addLogsFailedConsole}:\n${rejectedSummary}`,
+        );
         void vscode.window.showErrorMessage(
-          `有 ${result.rejectedEntries.length} 个日志解析失败，已跳过。详情见开发者工具控制台。`,
+          this.strings.rejectedLogs(result.rejectedEntries.length),
         );
       }
     });
@@ -124,7 +128,7 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
         await this.promptAddLogs();
         return;
       case "openLog":
-        await this.withProgress("正在打开日志...", async () => {
+        await this.withProgress(this.strings.openingLog, async () => {
           await this.logLibrary.openLog(message.logId);
         });
         await this.refresh();
@@ -179,12 +183,12 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
     }
 
     const confirmed = await vscode.window.showWarningMessage(
-      `确定删除日志“${targetLog.name}”吗？这只会移除记录，不会删除原始 TXT 文件。`,
+      this.strings.deleteLogConfirmation(targetLog.name),
       { modal: true },
-      "删除",
+      this.strings.delete,
     );
 
-    if (confirmed !== "删除") {
+    if (confirmed !== this.strings.delete) {
       return;
     }
 
@@ -225,9 +229,14 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this.context.extensionUri, "media", "logPanel.css"),
     );
     const nonce = String(Date.now());
+    const webviewStrings = JSON.stringify(this.strings.webview).replaceAll(
+      "<",
+      "\\u003c",
+    );
+    const text = this.strings.webview;
 
     return `<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="${this.strings.htmlLanguage}">
 <head>
   <meta charset="UTF-8" />
   <meta
@@ -236,20 +245,20 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
   />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="${styleUri}" />
-  <title>日志</title>
+  <title>${text.panelTitle}</title>
 </head>
 <body>
   <div id="app" class="app">
     <div id="busyOverlay" class="busy-overlay hidden">
       <div class="busy-card">
         <div class="busy-spinner"></div>
-        <div id="busyText">正在处理...</div>
+        <div id="busyText">${text.processing}</div>
       </div>
     </div>
     <div id="paneContainer" class="pane-container">
       <section id="leftPane" class="pane pane-left">
         <header class="pane-header">
-          <button id="addLogButton" class="primary-button">新增日志</button>
+          <button id="addLogButton" class="primary-button">${text.addLog}</button>
           <div id="adBanner" class="notice-text notice-text-inline"></div>
         </header>
         <div id="logList" class="list-container"></div>
@@ -261,7 +270,7 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
             id="chapterSearchInput"
             class="text-input"
             type="text"
-            placeholder="输入章节 ID 或章节序号"
+            placeholder="${text.chapterSearchPlaceholder}"
           />
         </header>
         <div id="chapterList" class="list-container"></div>
@@ -269,16 +278,16 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
       <div id="chapterDivider" class="pane-divider" data-divider="chapter"></div>
       <section id="outputPane" class="pane pane-output">
         <header class="pane-header pane-header-tools">
-          <div class="output-title">运行日志</div>
+          <div class="output-title">${text.runtimeLogs}</div>
           <div class="font-size-tools">
-            <button id="fontSizeDownButton" class="tool-button" title="缩小字号">A-</button>
+            <button id="fontSizeDownButton" class="tool-button" title="${text.decreaseFontSize}">A-</button>
             <span id="fontSizeValue" class="font-size-value">11</span>
-            <button id="fontSizeUpButton" class="tool-button" title="放大字号">A+</button>
+            <button id="fontSizeUpButton" class="tool-button" title="${text.increaseFontSize}">A+</button>
           </div>
           <div class="line-height-tools">
-            <button id="lineHeightDownButton" class="tool-button" title="减小行距">行-</button>
+            <button id="lineHeightDownButton" class="tool-button" title="${text.decreaseLineHeight}">${text.decreaseLineHeightLabel}</button>
             <span id="lineHeightValue" class="font-size-value">1.3</span>
-            <button id="lineHeightUpButton" class="tool-button" title="增大行距">行+</button>
+            <button id="lineHeightUpButton" class="tool-button" title="${text.increaseLineHeight}">${text.increaseLineHeightLabel}</button>
           </div>
         </header>
         <article id="outputBody" class="output-body"></article>
@@ -286,14 +295,15 @@ export class LogPanelViewProvider implements vscode.WebviewViewProvider {
       <div id="outputDivider" class="pane-divider" data-divider="output"></div>
       <section id="rightPane" class="pane pane-right">
         <header class="pane-header pane-header-readable">
-          <button id="previousChapterButton" class="secondary-button">前日志</button>
-          <div id="contentTitle" class="content-title">日志正文</div>
-          <button id="nextChapterButton" class="secondary-button">后日志</button>
+          <button id="previousChapterButton" class="secondary-button">${text.previousChapter}</button>
+          <div id="contentTitle" class="content-title">${text.logContent}</div>
+          <button id="nextChapterButton" class="secondary-button">${text.nextChapter}</button>
         </header>
         <article id="contentBody" class="content-body"></article>
       </section>
     </div>
   </div>
+  <script nonce="${nonce}">window.readerStarI18n = ${webviewStrings};</script>
   <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
 </html>`;

@@ -1,5 +1,6 @@
 (function () {
   const vscode = acquireVsCodeApi();
+  const i18n = window.readerStarI18n;
 
   const MIN_LEFT = 50;
   const MIN_MIDDLE = 50;
@@ -10,8 +11,8 @@
   const OUTPUT_DIVIDER_WIDTH = 1;
   const AD_ROTATION_MS = 60000;
   const AD_MESSAGES = [
-    "中转站：ai.luostar.net",
-    "中转站：aicf.luostar.net",
+    `${i18n.adRelayLabel}: api.luostar.net`,
+    `${i18n.adRelayLabel}: apicf.luostar.net`,
   ];
   const MIN_FONT_SIZE = 9;
   const MAX_FONT_SIZE = 20;
@@ -119,7 +120,7 @@
 
   function updateBusy(busy, message) {
     elements.busyOverlay.classList.toggle("hidden", !busy);
-    elements.busyText.textContent = message || "正在处理...";
+    elements.busyText.textContent = message || i18n.processing;
   }
 
   function getTotalDividerWidth() {
@@ -283,7 +284,7 @@
   function renderLogs() {
     if (!state.panel.logs.length) {
       elements.logList.innerHTML =
-        '<div class="list-empty">还没有日志。点击上方“新增日志”添加 TXT 文件后，就可以开始阅读。</div>';
+        `<div class="list-empty">${escapeHtml(i18n.noLogs)}</div>`;
       return;
     }
 
@@ -322,7 +323,7 @@
   function renderChapters() {
     if (!state.panel.chapters.length) {
       elements.chapterList.innerHTML =
-        '<div class="list-empty">打开日志后，这里会显示章节目录。</div>';
+        `<div class="list-empty">${escapeHtml(i18n.noChapters)}</div>`;
       return;
     }
 
@@ -383,7 +384,7 @@
       level: `Log.${level}`,
       levelClass: level.toLowerCase(),
       message:
-        `module=${moduleName} thread=${threadName} action=${action} seq=${seqText} chapter="${chapterLabel || "未打开章节"}" result=accepted latency=${12 + (sequence % 17)}ms checksum=0x${padNumber((sequence * 37) % 65535, 4)} frame=dispatch.pipeline.runtime`,
+        `module=${moduleName} thread=${threadName} action=${action} seq=${seqText} chapter="${chapterLabel || i18n.unopenedChapter}" result=accepted latency=${12 + (sequence % 17)}ms checksum=0x${padNumber((sequence * 37) % 65535, 4)} frame=dispatch.pipeline.runtime`,
     };
   }
 
@@ -391,7 +392,7 @@
     const safeLineCount = Math.max(lineCount, 24);
     const startTimeMs = Date.now() - LOG_START_OFFSET_MS;
 
-    state.activeChapterLabel = chapterLabel || "未打开章节";
+    state.activeChapterLabel = chapterLabel || i18n.unopenedChapter;
     state.simulatedOutputLines = Array.from({ length: safeLineCount }, (_, index) =>
       buildLogEntry(startTimeMs + index * 1000, index, state.activeChapterLabel),
     );
@@ -400,7 +401,7 @@
   function renderOutput() {
     if (state.simulatedOutputLines.length === 0) {
       elements.outputBody.innerHTML =
-        '<div class="output-placeholder">等待模拟日志输出...</div>';
+        `<div class="output-placeholder">${escapeHtml(i18n.waitingForOutput)}</div>`;
       return;
     }
 
@@ -436,7 +437,7 @@
       state.simulatedOutputLines = [];
       state.activeChapterLabel = "";
       elements.contentBody.innerHTML =
-        '<div class="content-placeholder">选择左侧日志与中间章节后，正文会显示在这里。</div>';
+        `<div class="content-placeholder">${escapeHtml(i18n.selectLogAndChapter)}</div>`;
       renderOutput();
       return;
     }

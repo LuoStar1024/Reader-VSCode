@@ -1,8 +1,8 @@
 {
   "name": "reader-star",
   "displayName": "Reader-Star",
-  "description": "Read TXT novels inside a custom VS Code panel.",
-  "version": "0.0.3",
+  "description": "%extension.description%",
+  "version": "0.0.4",
   "publisher": "luostar1024",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -39,7 +39,7 @@
       "panel": [
         {
           "id": "readerStarPanel",
-          "title": "日志",
+          "title": "%readerStar.panel.title%",
           "icon": "media/logs.svg"
         }
       ]
@@ -48,7 +48,7 @@
       "readerStarPanel": [
         {
           "id": "readerStar.logView",
-          "name": "日志",
+          "name": "%readerStar.view.name%",
           "type": "webview",
           "visibility": "visible"
         }
@@ -57,12 +57,12 @@
     "commands": [
       {
         "command": "reader-star.openLogPanel",
-        "title": "新建日志",
+        "title": "%readerStar.command.openLogPanel%",
         "icon": "$(new-file)"
       },
       {
         "command": "reader-star.addLogs",
-        "title": "新增日志",
+        "title": "%readerStar.command.addLogs%",
         "icon": "$(add)"
       }
     ],

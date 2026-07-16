@@ -6,6 +6,7 @@ import * as vscode from "vscode";
 import { detect } from "chardet";
 import iconv from "iconv-lite";
 
+import { LocalizedStrings } from "./localization";
 import {
   ChapterSummary,
   LogEntry,
@@ -86,7 +87,10 @@ export class LogLibrary {
   private fontSize = DEFAULT_FONT_SIZE;
   private lineHeight = DEFAULT_LINE_HEIGHT;
 
-  public constructor(private readonly context: vscode.ExtensionContext) {
+  public constructor(
+    private readonly context: vscode.ExtensionContext,
+    private readonly strings: LocalizedStrings,
+  ) {
     this.logs = this.context.globalState.get<LogEntry[]>(STORAGE_KEYS.logs, []);
     this.activeLogId = this.context.globalState.get<string | undefined>(
       STORAGE_KEYS.activeLogId,
@@ -160,7 +164,7 @@ export class LogLibrary {
         rejectedEntries.push({
           filePath: uri.fsPath,
           name: fileName || path.basename(uri.fsPath),
-          reason: "仅支持添加 TXT 格式文件。",
+          reason: this.strings.onlyTxtFiles,
         });
         continue;
       }
@@ -169,7 +173,7 @@ export class LogLibrary {
         rejectedEntries.push({
           filePath: uri.fsPath,
           name: fileName,
-          reason: "该日志已存在，无需重复添加。",
+          reason: this.strings.duplicateLog,
         });
         continue;
       }
@@ -179,7 +183,7 @@ export class LogLibrary {
         const chapters = this.parseChapters(text);
 
         if (chapters.length <= 2) {
-          const reason = `解析失败：识别到的章节数为 ${chapters.length}，需大于 2 章。`;
+          const reason = this.strings.insufficientChapters(chapters.length);
           console.error(`[reader-star] ${fileName}: ${reason}`);
           rejectedEntries.push({
             filePath: uri.fsPath,
@@ -191,8 +195,8 @@ export class LogLibrary {
       } catch (error) {
         const reason =
           error instanceof Error
-            ? `解析失败：${error.message}`
-            : "解析失败：无法读取或解析该文件。";
+            ? this.strings.parseError(error.message)
+            : this.strings.unreadableFile;
         console.error(`[reader-star] ${fileName}: ${reason}`);
         rejectedEntries.push({
           filePath: uri.fsPath,
@@ -369,7 +373,7 @@ export class LogLibrary {
     const activeLogId = this.activeLogId ?? this.logs[0]?.id;
 
     if (!activeLogId) {
-      throw new Error("当前没有可打开的日志。");
+      throw new Error(this.strings.noActiveLog);
     }
 
     this.activeLogId = activeLogId;
@@ -388,7 +392,7 @@ export class LogLibrary {
     const log = this.logs.find((entry) => entry.id === logId);
 
     if (!log) {
-      throw new Error("日志不存在或已被移除。");
+      throw new Error(this.strings.missingLog);
     }
 
     const text = await this.readTextFile(log.filePath);
@@ -462,7 +466,7 @@ export class LogLibrary {
         {
           id: "1",
           index: 0,
-          title: "空白日志",
+          title: this.strings.blankLog,
           start: 0,
           end: 0,
         },
@@ -495,7 +499,7 @@ export class LogLibrary {
         {
           id: "1",
           index: 0,
-          title: "全文",
+          title: this.strings.fullText,
           start: 0,
           end: text.length,
         },
@@ -508,7 +512,7 @@ export class LogLibrary {
       chapters.push({
         id: "1",
         index: 0,
-        title: "开篇",
+        title: this.strings.opening,
         start: 0,
         end: markers[0].start,
       });
